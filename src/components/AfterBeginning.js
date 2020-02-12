@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { View, Text, Dimensions, TouchableOpacity, UIManager, LayoutAnimation } from 'react-native';
+import { strings } from '../../Loocalization';
 
 const { width, height } = Dimensions.get('window');
 
 UIManager.setLayoutAnimationEnabledExperimental(true);
 
 class AfterBeginning extends Component {
-  state = { beginningVisible: false}
+  state = { beginningVisible: false }
 
   render() {
     const {
@@ -35,47 +36,47 @@ class AfterBeginning extends Component {
               onPress={() => {
                 LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                 this.setState({ beginningVisible: false })
-            }}
+              }}
             >
-              <Text style={titleText}>Başlangıçtan sonra</Text>
-              <Text style={titleText2}>Baş.değ. göre({dailyNumberOfCigarettes})</Text>
+              <Text style={titleText}>{strings.ABafterBeginning}</Text>
+              <Text style={titleText2}>{strings.TDABbyInitialVal}({dailyNumberOfCigarettes})</Text>
             </TouchableOpacity>
 
             <View style={[itemContainer, { backgroundColor: '#CFCFCF' }]}>
               <Text style={boldNumberText} >{totalAfterBeginningTimes} </Text>
-              <Text>sigara içildi</Text>
+              <Text>{strings.TDABsmoking}</Text>
             </View>
 
             <View style={[itemContainer, { backgroundColor: '#ECECEC' }]}>
-              <Text style={[boldNumberText, { color: earnedSmokeBeginning < 0 ? 'red' : 'green' }]} > {Math.abs(earnedSmokeBeginning)} </Text>
-              <Text> {earnedSmokeBeginning < 0 ? 'Daha fazla sigara içtiniz' : 'Daha az sigara içtiniz'} </Text>
+              <Text style={[boldNumberText, { color: earnedSmokeBeginning < 0 ? 'red' : 'green' }]} >{Math.abs(earnedSmokeBeginning)}  </Text>
+              <Text>{earnedSmokeBeginning < 0 ? strings.TDBAmoreSmoked : strings.TDABlessSmoked} </Text>
             </View>
 
             <View style={[itemContainer, { backgroundColor: '#CFCFCF', }]}>
-              <Text style={boldNumberText} > {spendedPackageBeginning}  </Text>
-              <Text>Paket içildi </Text>
+              <Text style={boldNumberText} >{spendedPackageBeginning}  </Text>
+              <Text>{strings.TDABpacks} </Text>
             </View>
 
             <View style={[itemContainer, { backgroundColor: '#ECECEC', }]}>
-              <Text style={boldNumberText} > {spendedMoneyBeginning} ₺  </Text>
-              <Text>para harcandı </Text>
+              <Text style={boldNumberText} >{spendedMoneyBeginning} ₺  </Text>
+              <Text>{strings.TDABspendMoney} </Text>
             </View>
 
             <View style={[itemContainer, { backgroundColor: '#CFCFCF', }]}>
-              <Text style={[boldNumberText, { color: earnedMoneyBeginning < 0 ? 'red' : 'green' }]} > {Math.abs(earnedMoneyBeginning)} ₺  </Text>
-              <Text>{earnedMoneyBeginning < 0 ? 'Daha fazla para harcandı' : 'kar edildi'} </Text>
+              <Text style={[boldNumberText, { color: earnedMoneyBeginning < 0 ? 'red' : 'green' }]} >{Math.abs(earnedMoneyBeginning)} ₺  </Text>
+              <Text>{earnedMoneyBeginning < 0 ? strings.TDABlossMoney : strings.TDABearnMoney} </Text>
             </View>
 
           </View> :
           <TouchableOpacity
             style={titleHidden}
-            onPress={() =>{ 
+            onPress={() => {
               LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
               this.setState({ beginningVisible: true })
-          }}
+            }}
           >
-            <Text style={titleText}>Başlangıçtan sonra</Text>
-            <Text style={titleText2}>Baş.değ. göre({dailyNumberOfCigarettes})</Text>
+            <Text style={titleText}>{strings.ABafterBeginning}</Text>
+            <Text style={titleText2}>{strings.TDABbyInitialVal}({dailyNumberOfCigarettes})</Text>
           </TouchableOpacity>
         }
       </View>
@@ -88,8 +89,8 @@ export default AfterBeginning;
 const styles = {
   mainContainers: {
     backgroundColor: 'white',
-    marginTop: height/100,
-    marginBottom: height/40,
+    marginTop: height / 100,
+    marginBottom: height / 40,
     borderWidth: 1,
     borderColor: '#CFCFCF',
     borderRadius: 5
@@ -99,42 +100,42 @@ const styles = {
     borderTopRightRadius: 5,
     backgroundColor: 'white',
     justifyContent: 'space-between',
-    flexDirection:'row',
-    alignItems:'center',
-    height: height/18,
-    paddingLeft: width/51,
-    paddingRight: width/51,
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: height / 18,
+    paddingLeft: width / 51,
+    paddingRight: width / 51,
   },
   titleHidden: {
-    height: height/18,
-    flexDirection:'row',
+    height: height / 18,
+    flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems:'center',
+    alignItems: 'center',
     backgroundColor: 'white',
-    paddingLeft: width/51,
-    paddingRight: width/51,
-    marginBottom:height/27,
-    marginTop: height/100,
+    paddingLeft: width / 51,
+    paddingRight: width / 51,
+    marginBottom: height / 27,
+    marginTop: height / 100,
     borderRadius: 5,
     borderWidth: 1,
     borderColor: '#CFCFCF',
   },
   titleText: {
-    fontSize: width/21,
+    fontSize: width / 21,
     fontWeight: 'bold'
   },
   titleText2: {
-    fontSize: width/30,
+    fontSize: width / 30,
   },
 
   itemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: height/20,
-    paddingLeft: width/51,
+    height: height / 20,
+    paddingLeft: width / 51,
   },
   boldNumberText: {
-    fontSize: width/28,
+    fontSize: width / 28,
     fontWeight: 'bold'
   }
 }

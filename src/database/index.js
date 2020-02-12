@@ -99,7 +99,6 @@ export class DbManager {
                     const element = values.rows.item(index);
                     array.push(element);
                 }
-                //console.log('db today times', array )
                 resolve(array);
             }).catch((err) => {
                 reject(false);
@@ -174,7 +173,6 @@ export class DbManager {
                     const element = values.rows.item(index);
                     array.push(element);
                 }
-                //console.log('date',array)
                 resolve(array);
             }).catch((err) => {
                 reject(false);
@@ -182,22 +180,14 @@ export class DbManager {
         });
     }
 
-
-    getTableTimes() {
+    clearAllTimes(){
         return new Promise((resolve, reject) => {
             this.dbInstance.executeSql(
-                "SELECT * FROM times"
-            ).then(([values]) => {
-                var array = [];
-                for (let index = 0; index < values.rows.length; index++) {
-                    const element = values.rows.item(index);
-                    array.push(element);
-                }
-                resolve(array);
-            }).catch((err) => {
-                reject(false);
-            })
-        });
+                "delete from times"
+            )
+            .then(()=>resolve(true))
+            .catch(()=> reject(false))
+        })
     }
 
 }

@@ -8,15 +8,16 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import AsyncStorage from '@react-native-community/async-storage';
-import { DbManager } from "../database/index";
-import OpeningFunc from '../functions/OpeningFunc';
 import {
   Today,
   LastWeek,
-  MyDialog,
   TodayScore,
   AfterBeginning,
-} from '../components/index';
+  OpeningFunc,
+  DbManager,
+  MyDialog,
+  strings
+} from '../index';
 
 
 const { width, height } = Dimensions.get('window');
@@ -81,6 +82,7 @@ class MasterApp extends Component {
       this.componentDidMount()
     })
   }
+  
   //************************** SET TARGET  ************************* */
   async setNewTarget(newTarget) {
     await AsyncStorage.setItem('target', newTarget)
@@ -116,6 +118,7 @@ class MasterApp extends Component {
         <ScrollView style={scrollView} >
           <View >
             <TodayScore
+              launchAgainPress={this.props.launchAgainPress}
               smokingRangeHour={smokingRangeHour}
               smokingRangeMinute={smokingRangeMinute}
               dailyNumberOfCigarettes={dailyNumberOfCigarettes}
@@ -152,11 +155,15 @@ class MasterApp extends Component {
           </View>
 
         </ScrollView>
+
         <MyDialog
           visible={smokedDialogVisible}
-          onTouchOutside={() => { this.setState({ smokedDialogVisible: false }) }}
-          yesButton={() => this.iSmoked()}
+          rightButtonText={strings.TSyes}
+          leftButtonText={strings.TSno}
+          contentText={strings.MAareUsmoked}
+          onTouchOutside={() => this.setState({ smokedDialogVisible: false })}
           noButton={() => this.setState({ smokedDialogVisible: false })}
+          yesButton={() => this.iSmoked()}
         />
       </View>
     );

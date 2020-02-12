@@ -89,7 +89,6 @@ export default class OpeningFunc {
         const earnedSmokeBeginning = (shouldHaveBeenBeginning - totalAfterBeginningTimes).toFixed(2)
         const spendedPackageBeginning = totalAfterBeginningTimes / numberOfCigarettesInPack
         const spendedMoneyBeginning = (totalAfterBeginningTimes * (packagePrice / numberOfCigarettesInPack)).toFixed(2)
-
         const openingAppDatas = {
             dailyNumberOfCigarettes,
             dbTodayId,

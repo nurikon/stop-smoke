@@ -1,49 +1,57 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
-import {
-  Circleing,
-  MasterApp,
-  FirstLaunch
-} from './src/pages/index';
+import Circleing from "./src/pages/Circleing";
+import MasterApp from "./src/pages/MasterApp";
+import FirstScreen from "./src/pages/FirstScreen";
+import { DbManager } from './src/index';
 
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      firstLaunched: null
+      firstScreenVisible: null
     };
   }
 
+  DbManager = new DbManager();
+
+  async launchAgain() {
+    await this.DbManager.clearAllTimes()
+    await AsyncStorage.setItem('firstScreenVisible', '')
+    this.setState({ firstScreenVisible: true })
+  }
 
   componentDidMount() {
-    AsyncStorage.getItem("alreadyLaunched").then(value => {
+    AsyncStorage.getItem("firstScreenVisible").then(value => {
       if (value == null) {
-        this.setState({ firstLaunched: false });
+        this.setState({ firstScreenVisible: true });
       }
       else {
-        this.setState({ firstLaunched: true });
+        this.setState({ firstScreenVisible: false });
       }
     })
   }
 
   render() {
-    const { firstLaunched } = this.state
+    const { firstScreenVisible } = this.state
     return (
       <View style={{ flex: 1 }} >
         {
-          firstLaunched === null ?
+          firstScreenVisible === null ?
             <Circleing />
             :
-            firstLaunched === false ?
-              <FirstLaunch
-                press={() => {
-                  this.setState({ firstLaunched: true })
+            firstScreenVisible === true ?
+              <FirstScreen
+                sendButtonPress={() => {
+                  this.setState({ firstScreenVisible: false })
                 }}
               />
               :
-              <MasterApp />
+              <MasterApp
+                launchAgainPress={() => this.launchAgain()}
+              />
         }
       </View>
     );

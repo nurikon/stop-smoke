@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, Dimensions, Image } from 'react-native';
-import Timer from '../components/Timer';
-import Dialog from "react-native-dialog";
-import LineChart from './LineChart';
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    Dimensions,
+    Image
+} from 'react-native';
+import { Timer, LineChart, strings, MyDialog } from '../index';
 
 const { width, height } = Dimensions.get('window');
 
@@ -10,19 +14,39 @@ class TodayScore extends Component {
     state = {
         swapTargetVisible: false,
         newTarget: '',
+        emptyVal: false,
+        restartVisible: false
     }
 
     setNewTarget() {
-        this.setState({ swapTargetVisible: false })
-        this.props.setNewTarget(this.state.newTarget)
+        const { newTarget } = this.state
+        if (newTarget != '') {
+            this.setState({ swapTargetVisible: false })
+            this.props.setNewTarget(this.state.newTarget)
+        } else {
+            this.setState({ emptyVal: true })
+        }
+    }
+    restart() {
+        this.setState({ restartVisible: false })
+        this.props.launchAgainPress()
     }
 
 
     render() {
-        
-        const { biggerVal, emptyVal, swapTargetVisible } = this.state
-        const { dbTodayTimes, target, smokingRangeHour, smokingRangeMinute} = this.props
-  
+
+        const {
+            emptyVal,
+            swapTargetVisible,
+            restartVisible
+        } = this.state
+        const {
+            dbTodayTimes,
+            target,
+            smokingRangeHour,
+            smokingRangeMinute
+        } = this.props
+
         const {
             scoreContainer,
             circleContainer,
@@ -30,7 +54,8 @@ class TodayScore extends Component {
             chartContainer,
             chartStyle,
             orange,
-            swapContainer
+            swapContainer,
+            launchAgainButton
         } = styles
 
         let smokedWidth = 0
@@ -45,6 +70,14 @@ class TodayScore extends Component {
             <View>
 
                 <View style={scoreContainer}>
+                    <TouchableOpacity
+                        onPress={() => this.setState({ restartVisible: true })}
+                        style={launchAgainButton}>
+                        <Image
+                            source={require('../../restart1.png')}
+                        />
+                    </TouchableOpacity>
+
                     <View style={circleContainer}>
                         <Text
                             style={scoreText}>
@@ -52,7 +85,13 @@ class TodayScore extends Component {
                         </Text>
                         <Timer />
                     </View>
-                    <Text style={{paddingTop:10}}>hedefe göre {smokingRangeHour}:{smokingRangeMinute<10 ? '0'+smokingRangeMinute:smokingRangeMinute} saatte bir sigara içebilirsiniz </Text>
+
+                    <Text
+                        style={{ paddingTop: 10 }}
+                    >
+                        {strings.TStargetTime1} {smokingRangeHour}:{smokingRangeMinute < 10 ? '0' + smokingRangeMinute : smokingRangeMinute} {strings.TStargetTime2}
+                    </Text>
+
                     <TouchableOpacity
                         style={swapContainer}
                         onPress={() => this.setState({ swapTargetVisible: true })}
@@ -61,6 +100,7 @@ class TodayScore extends Component {
                             source={require('../../target.png')}
                         />
                     </TouchableOpacity>
+
 
                 </View>
 
@@ -85,45 +125,31 @@ class TodayScore extends Component {
                     </View>
                     <LineChart dbTodayTimes={dbTodayTimes} />
 
-
                 </View>
-                <Dialog.Container
-                    contentStyle={{ borderRadius: 30, justifyContent: 'center', alignItems: 'center' }}
-                    visible={swapTargetVisible}>
-                    <Dialog.Description style={{ color: biggerVal || emptyVal ? 'red' : 'green' }}>
-                        {biggerVal ?
-                            'Yeni hedefinizi yükseltemezsiniz' :
-                            emptyVal ?
-                                'Yeni bir hedef giriniz' :
-                                'Yeni bir hedef belirleyin'}
-                    </Dialog.Description>
 
-                    <Dialog.Input
-                        maxLength={2}
-                        wrapperStyle={{
-                            paddingLeft: width / 32,
-                            width: width / 10,
-                            borderColor: '#CFCFCF',
-                            borderWidth: 1,
+                <MyDialog
+                    visible={restartVisible}
+                    rightButtonText={strings.TSyes}
+                    leftButtonText={strings.TSno}
+                    contentText={strings.TSrestart}
+                    onTouchOutside={() => this.setState({ restartVisible: false })}
+                    noButton={() => this.setState({ restartVisible: false })}
+                    yesButton={() => this.restart()}
+                />
 
-                        }}
-                        onChangeText={(text) => {
-                            this.setState({ newTarget: text })
-                        }}
-                        keyboardType={'numeric'}
-                    />
-                    <Dialog.Button
-                        color='green'
-                        label="Vazgeç"
-                        onPress={() => this.setState({ swapTargetVisible: false })}
-                    />
-                    <Dialog.Button
-                        color='green'
-                        label="Tamam"
-                        onPress={() => this.setNewTarget()}
-                    />
-                </Dialog.Container>
-
+                <MyDialog
+                    rightButtonText={strings.TSok}
+                    leftButtonText={strings.TScancel}
+                    textInput={true}
+                    contentText={emptyVal ?
+                        strings.TSemptyTarget :
+                        strings.TSsetTarget}
+                    visible={swapTargetVisible}
+                    onChangeText={(val) => { this.setState({ newTarget: val }) }}
+                    onTouchOutside={() => this.setState({ swapTargetVisible: false })}
+                    noButton={() => this.setState({ swapTargetVisible: false })}
+                    yesButton={() => this.setNewTarget()}
+                />
 
             </View>
         );
@@ -143,11 +169,6 @@ const styles = {
         borderRadius: height / 40,
         borderColor: '#CFCFCF'
     },
-    scoreText: {
-        color: '#ff6000',
-        fontSize: height / 20,
-        fontWeight: 'bold'
-    },
     circleContainer: {
         width: width / 4,
         height: width / 4,
@@ -157,6 +178,11 @@ const styles = {
         backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    scoreText: {
+        color: '#ff6000',
+        fontSize: height / 20,
+        fontWeight: 'bold'
     },
     chartContainer: {
         flexDirection: 'row',
@@ -181,5 +207,10 @@ const styles = {
         right: width / 40,
         top: height / 80,
         position: 'absolute',
+    },
+    launchAgainButton: {
+        position: 'absolute',
+        left: width / 40,
+        top: height / 80
     }
 }

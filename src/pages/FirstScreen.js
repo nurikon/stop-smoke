@@ -9,13 +9,12 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import AsyncStorage from '@react-native-community/async-storage';
-import { DbManager } from "../database/index";
-import Circleing from './Circleing';
+import { DbManager, strings, Circleing } from '../index';
 
 
 const { width, height } = Dimensions.get('window');
 
-class FirstLaunch extends Component {
+class FirstScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -26,33 +25,36 @@ class FirstLaunch extends Component {
       packagePrice: '',
       startDaySmokedNumber: '',
       target: '',
-      sleepTime:''
+      sleepTime: ''
     };
   }
   DbManager = new DbManager();
 
+  //****************** COMPONENT DİD MOUNT ******************* */
   componentDidMount() {
     const date = new Date()
     const deviceDate = moment(date).format('DD/MM/YYYY')
     this.setState({ startDate: deviceDate })
   }
 
-  async pushDbStartDayTimes({ startDaySmokedNumber }) {
+  //***************************************************** */
+  async pushDbStartDayTimes(startDaySmokedNumber) {
     const date = new Date()
-    const deviceTime=moment(date).format('HH:mm:ss')
+    const deviceTime = moment(date).format('HH:mm:ss')
     const deviceDate = moment(date).format('DD/MM/YYYY')
     const dbToday = await this.DbManager.getDbToday(deviceDate)
-    
+
     //açılış günü içilen sigara kadar times basar
     for (i = 0; i < startDaySmokedNumber; i++) {
-      if(i == startDaySmokedNumber-1){
+      if (i == startDaySmokedNumber - 1) {
         this.DbManager.addTableTimes(deviceTime, dbToday.id)
-      }else{
+      } else {
         this.DbManager.addTableTimes('00:01:00', dbToday.id)
-      } 
+      }
     }
   }
 
+  //***************** SEND BUTTON ONPRESSED ********************* */
   async onPress() {
     const {
       startDaySmokedNumber,
@@ -71,8 +73,8 @@ class FirstLaunch extends Component {
       target != '' &&
       sleepTime != ''
     ) {
-
       this.setState({ circleing: true })
+      const launchAgain = await AsyncStorage.getItem("launchAgain")
       await AsyncStorage.multiSet([
         ['dailyNumberOfCigarettes', dailyNumberOfCigarettes],
         ['numberOfCigarettesInPack', numberOfCigarettesInPack],
@@ -81,20 +83,21 @@ class FirstLaunch extends Component {
         ['target', target],
         ['sleepTime', sleepTime]
       ])
-
-      await AsyncStorage.setItem('alreadyLaunched', 'true')
-      await this.DbManager.createTableTimes()
-      await this.DbManager.createTableDays()
-      await this.DbManager.addTableDates()
-      await this.pushDbStartDayTimes({
-        startDaySmokedNumber,
-        dailyNumberOfCigarettes
-      })
-      
-      this.setState({ circleing: false })
-    
-      this.props.press()
-
+      if (launchAgain == null) {
+        await this.DbManager.createTableTimes()
+        await this.DbManager.createTableDays()
+        await this.DbManager.addTableDates()
+        await this.pushDbStartDayTimes(startDaySmokedNumber)
+        await AsyncStorage.setItem('firstScreenVisible', 'false')
+        await AsyncStorage.setItem('launchAgain', 'true')
+        this.setState({ circleing: false })
+        this.props.sendButtonPress()
+      } else {
+        await this.pushDbStartDayTimes(startDaySmokedNumber)
+        await AsyncStorage.setItem('firstScreenVisible', 'false')
+        this.setState({ circleing: false })
+        this.props.sendButtonPress()
+      }
 
     } else {
       Alert.alert(
@@ -106,7 +109,7 @@ class FirstLaunch extends Component {
       );
     }
   }
-
+  //************************* RENDER **************************** */
   render() {
     const { container, textInputContainer, textInput, sendButton } = styles
     return (
@@ -118,7 +121,7 @@ class FirstLaunch extends Component {
             <View style={container}>
 
               <View style={textInputContainer}>
-                <Text>Günlük içilen sigara sayısı</Text>
+                <Text> {strings.FSdailySmoke} </Text>
                 <TextInput
                   textAlign={'center'}
                   maxLength={2}
@@ -131,7 +134,7 @@ class FirstLaunch extends Component {
               </View>
 
               <View style={textInputContainer}>
-                <Text>Bir paketteki sigara sayısı</Text>
+                <Text> {strings.FSnumberPacked} </Text>
                 <TextInput
                   textAlign={'center'}
                   maxLength={2}
@@ -144,7 +147,7 @@ class FirstLaunch extends Component {
               </View>
 
               <View style={textInputContainer}>
-                <Text>Paket başına fiyat</Text>
+                <Text>{strings.FSpricePacked}</Text>
                 <TextInput
                   textAlign={'center'}
                   maxLength={2}
@@ -157,7 +160,7 @@ class FirstLaunch extends Component {
               </View>
 
               <View style={textInputContainer}>
-                <Text>Bugün tahminen kaç sigara içtin?</Text>
+                <Text> {strings.FSfirstdaySmoke} </Text>
                 <TextInput
                   textAlign={'center'}
                   maxLength={2}
@@ -169,7 +172,7 @@ class FirstLaunch extends Component {
                 />
               </View>
               <View style={textInputContainer}>
-                <Text>İlk hafta için günlük hedefiniz</Text>
+                <Text> {strings.FSfirstTarget} </Text>
                 <TextInput
                   textAlign={'center'}
                   maxLength={2}
@@ -181,7 +184,7 @@ class FirstLaunch extends Component {
                 />
               </View>
               <View style={textInputContainer}>
-                <Text>Günde ortalama kaç saat uyuyorsunuz?</Text>
+                <Text>{strings.FSsleepingHour}</Text>
                 <TextInput
                   textAlign={'center'}
                   maxLength={2}
@@ -196,7 +199,7 @@ class FirstLaunch extends Component {
               <TouchableOpacity
                 onPress={() => this.onPress()}
                 style={sendButton}>
-                <Text> gönder </Text>
+                <Text> {strings.FSsend} </Text>
               </TouchableOpacity>
 
             </View>
@@ -206,11 +209,11 @@ class FirstLaunch extends Component {
   }
 }
 
-export default FirstLaunch;
+export default FirstScreen;
 
 const styles = {
   container: {
-    paddingTop:height/19.95,
+    paddingTop: height / 19.95,
     flex: 1,
     alignItems: 'center',
     backgroundColor: '#ECECEC'
@@ -218,14 +221,14 @@ const styles = {
   textInputContainer: {
     justifyContent: 'space-between',
     flexDirection: 'row',
-    width: width * 0.7,
+    width: width * 0.85,
     height: height * 0.08,
     alignItems: 'center',
   },
   textInput: {
     borderWidth: 1,
     width: width * 0.08,
-    height: height/19.95,
+    height: height / 19.95,
     borderColor: 'gray',
     borderRadius: 3,
   },
