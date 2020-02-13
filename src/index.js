@@ -8,4 +8,5 @@ export { default as OpeningFunc } from "./functions/OpeningFunc";
 export {DbManager} from "./database/index";
 export { default as MyDialog } from "./components/MyDialog";
 export { strings } from "../Loocalization";
+export {default as Circleing} from './pages/Circleing';
 
