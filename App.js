@@ -5,7 +5,7 @@ import Circleing from "./src/pages/Circleing";
 import MasterApp from "./src/pages/MasterApp";
 import FirstScreen from "./src/pages/FirstScreen";
 import { DbManager } from './src/index';
-
+//bu bir denemedir
 
 class App extends Component {
   constructor(props) {

@@ -5,6 +5,8 @@
  
   so you will understand what kind of smoker you are. You should't forget add new target, Your new targets will lead you to success.
 
+  dddddddddd
+
 <img width="323" alt="Screen Shot 2020-02-12 at 16 42 49" src="https://user-images.githubusercontent.com/44235071/74341146-47137480-4db8-11ea-9fb6-7e9c74ba4c6c.png">
 
 
